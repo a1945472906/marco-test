@@ -22,25 +22,22 @@ fn impl_check_macro(input: TokenStream) -> TokenStream{
             panic!("expected a struct with named fields")
         }
     };
-    let field_name = fields.iter().map(|field| &field.ident);
-    TokenStream::from(quote! {
+    let fields = fields.iter().map(|field|(&field.ident));
+    TokenStream::from(quote!{
         impl #struct_name{
-            fn check_empty(_s: &String) -> bool {
-                _s.is_empty()
-            }
-            
-            fn is_string<T: std::any::Any>(_s:&T) -> bool{
-                std::any::TypeId::of::<String>() == std::any::TypeId::of::<T>()
+            fn is_empty_string(value: Box<dyn std::any::Any>) -> bool{
+                if let Ok(s) = value.downcast::<String>(){
+                    s.is_empty()
+                } else {
+                    false
+                }
             }
         }
         impl CheckStringFields for #struct_name{
-            fn check(&self) -> bool{
+            fn check(&self) -> bool {
                 #(
-                    if #struct_name::is_string(&self.#field_name){
-                        // let _a:&String =&self.#field_name;
-                        if #struct_name::check_empty(&self.#field_name){
-                            return false;
-                        }
+                    if  #struct_name::is_empty_string(Box::new(self.#fields.clone())){
+                        return false;
                     }
                 )*
                 true

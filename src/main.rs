@@ -9,19 +9,19 @@ use macro_derive::CheckStringFields;
 pub struct Test{
     pub a: String,
     pub b: String,
-    // pub c: usize
+    pub c: usize
 }
 
 fn main() {
     let t1 = Test{
         a:String::from("foo"),
         b:String::from("bar"),
-        // c: 10
+        c: 10
     };
     let t2 = Test{
         a:String::from("foo"),
         b:String::from(""),
-        // c: 10
+        c: 10
     };
     match t1.check(){
         true => {}
@@ -37,5 +37,4 @@ fn main() {
             println!("{:?}",t2);
         }
     };
-    
 }
