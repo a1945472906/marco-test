@@ -3,7 +3,6 @@ use macro_derive_traits::CheckStringFields;
 extern crate macro_derive;
 use macro_derive::CheckStringFields;
 
-
 // #[derive(HelloMacro)]
 #[derive(Debug,CheckStringFields)]
 pub struct Test{

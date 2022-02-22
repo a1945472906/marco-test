@@ -24,20 +24,27 @@ fn impl_check_macro(input: TokenStream) -> TokenStream{
     };
     let fields = fields.iter().map(|field|(&field.ident));
     TokenStream::from(quote!{
-        impl #struct_name{
-            fn is_empty_string(value: Box<dyn std::any::Any>) -> bool{
-                if let Ok(s) = value.downcast::<String>(){
-                    s.is_empty()
-                } else {
-                    false
-                }
+        trait CheckEmptyAny{
+            fn is_empty_string(&self) -> bool;
+        }
+        impl <T> CheckEmptyAny for &T{
+            fn is_empty_string(&self) -> bool{
+                false
+            }
+        }
+        trait CheckEmptyString {
+            fn is_empty_string(&self) -> bool;
+        }
+        impl CheckEmptyString for String{
+            fn is_empty_string(&self) -> bool {
+                self.is_empty()
             }
         }
         impl CheckStringFields for #struct_name{
             fn check(&self) -> bool {
                 #(
-                    if  #struct_name::is_empty_string(Box::new(self.#fields.clone())){
-                        return false;
+                    if (&self.#fields).is_empty_string(){
+                        return false
                     }
                 )*
                 true
